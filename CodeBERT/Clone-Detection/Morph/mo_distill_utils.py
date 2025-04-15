@@ -19,7 +19,7 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(name)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-def train(model, train_dataloader, eval_dataloader, meta_dataloader, epochs, learning_rate, device, surrogate=False):
+def train(model, train_dataloader, eval_dataloader, meta_dataloader, epochs, learning_rate, device, surrogate=False, weights_file="model.bin"):
     num_steps = len(train_dataloader) * epochs
     no_decay = ["bias", "LayerNorm.weight"]
     total_params = sum(p.numel() for p in model.parameters())
@@ -83,7 +83,7 @@ def train(model, train_dataloader, eval_dataloader, meta_dataloader, epochs, lea
             if not surrogate:
                 output_dir = os.path.join("../checkpoints", "Morph")
                 os.makedirs(output_dir, exist_ok=True)
-                model_path = os.path.join(output_dir, "model.bin")
+                model_path = os.path.join(output_dir, weights_file)
 
                 if os.path.exists(model_path):
                     os.remove(model_path)
@@ -145,7 +145,7 @@ def evaluate(model, device, eval_dataloader):
     }
     return results, preds
 
-def distill(hyperparams_set, eval=False, surrogate=True, seed=1):
+def distill(hyperparams_set, eval=False, surrogate=True, seed=1, weights_file="model.bin"):
     data_file = "data.jsonl"
     metamorphic_file = "metamorphic_data_new.jsonl"
     train_data_file = "../data/unlabel_train.txt"
@@ -211,7 +211,7 @@ def distill(hyperparams_set, eval=False, surrogate=True, seed=1):
 
 
             dev_best_acc, pred_original = train(model, train_dataloader, eval_dataloader, eval_dataloader2, epochs, learning_rate, device,
-                                                surrogate)
+                                                surrogate, weights_file=weights_file)
             dev_best_accs.append(dev_best_acc)
 
             #eval_dataset2 = DistilledDataset(tokenizer_type, vocab_size, eval_data_file, max_sequence_length, logger,
@@ -224,7 +224,7 @@ def distill(hyperparams_set, eval=False, surrogate=True, seed=1):
             prediction_flips.append(np.sum(pred_original != pred_metamorphic))
 
         else:
-            model_dir = os.path.join("../checkpoints", "Morph", "model.bin")
+            model_dir = os.path.join("../checkpoints", "Morph", weights_file)
             model.load_state_dict(torch.load(model_dir, map_location=device))
             model.to(device)
 
