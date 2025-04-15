@@ -13,7 +13,7 @@ pareto_front = pd.read_csv('mo_pareto_fronts.csv')
 pareto_front = pareto_front.to_numpy()[:, 2:]
 
 hyperparameters = pareto_front[:, :pareto_front.shape[1] - 4]
-objs = pareto_front[:, pareto_front.shape[1] - 4:]
+objectives = pareto_front[:, pareto_front.shape[1] - 4:]
 
 # Final results file
 results_file = 'pareto_front_training.csv'
@@ -27,7 +27,7 @@ fieldnames = [
 for i in range(hyperparameters.shape[0]):
     # Get hyperparameters
     hyperparams = hyperparameters[i]
-    objs = objs[i]
+    objs = objectives[i]
     logging.info(f"Training {i} with FLOPs {objs[3]} and size {objs[0]}")
     start_time = time.time()
     accs, prediction_flips = distill([hyperparams], eval=False, surrogate=False, seed=seed, weights_file=f"pareto_{i}.bin")
