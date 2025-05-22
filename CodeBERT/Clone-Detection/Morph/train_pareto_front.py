@@ -9,14 +9,14 @@ from mo_distill_utils import distill
 seed = 2
 
 # Load Pareto front data and convert to array
-pareto_front = pd.read_csv('mo_pareto_fronts.csv')
-pareto_front = pareto_front.to_numpy()[:, 2:]
+pareto_front = pd.read_csv('new_pareto.csv')
+#pareto_front = pareto_front.to_numpy()[:, 2:]
 
 hyperparameters = pareto_front[:, :pareto_front.shape[1] - 4]
 objectives = pareto_front[:, pareto_front.shape[1] - 4:]
 
 # Final results file
-results_file = 'pareto_front_training.csv'
+results_file = 'pareto_front_training_capped.csv'
 fieldnames = [
         "Tokenizer", "Vocab Size", "Num Hidden Layers", "Hidden Size", "Hidden Act", "Hidden Dropout Prob",
         "Intermediate Size", "Num Attention Heads", "Attention Probs Dropout Prob", "Max Sequence Length",
