@@ -8,9 +8,8 @@ from mo_distill_utils import distill, hyperparams_convert
 
 seed = 2
 
-# Load Pareto front data and convert to array
 pareto_front = pd.read_csv('new_pareto.csv')
-pareto_front = pareto_front.to_numpy()
+pareto_front = pareto_front.to_numpy()[:, 2:]
 
 hyperparameters = pareto_front[:, :pareto_front.shape[1] - 4]
 objectives = pareto_front[:, pareto_front.shape[1] - 4:]
